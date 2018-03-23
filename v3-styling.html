@@ -1,0 +1,105 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta content="width=device-width,initial-scale=1,minimal-ui" name="viewport">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic|Material+Icons">
+    <link rel="stylesheet" href="https://unpkg.com/vue-material@beta/dist/vue-material.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/vue-material@beta/dist/theme/default.css">
+    <script src="https://unpkg.com/vue"></script>
+  </head>
+
+  <body>
+    <div id="app">
+      <div class="header">
+        <md-field>
+          <md-icon>search</md-icon>
+          <label>Search</label>
+          <md-input v-on:input="filterMovies" v-model="search"></md-input>
+        </md-field>
+      </div>
+
+      <div class ="movies">
+        <div v-for="movie in movies">
+          <md-card class="md-elevation-10">
+            <md-card-media-cover md-solid>
+              <md-card-media>
+                <img :src="movieImage(movie.poster_path)" alt="Skyscraper">
+              </md-card-media>
+
+              <md-card-area>
+                <md-card-header>
+                  <span class="md-title">{{ movie.title }}</span>
+                  <span class="md-subhead">
+                    <!-- <p>{{ movie.overview}}</p> -->
+                    <p> <md-icon style="color: white">date_range</md-icon> Release date: {{ movie.release_date}}</p>
+                    <p> <md-icon style="color: white">favorite</md-icon> Vote average: {{ movie.vote_average}}</p>
+                  </span>
+                </md-card-header>
+              </md-card-area>
+            </md-card-media-cover>
+          </md-card>
+        </div>
+      </div>
+    </div>
+
+    <style lang="scss" scoped>
+    .md-card {
+      width: 320px;
+      margin: 20px;
+      display: inline-block;
+      vertical-align: top;
+    }
+    .movies {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 50px;
+    }
+  </style>
+
+    <script src="https://unpkg.com/vue"></script>
+    <script src="https://unpkg.com/vue-material@beta"></script>
+    <script>
+      Vue.use(VueMaterial.default)
+
+      const BASE_URL = "http://api.themoviedb.org/3"
+      const IMAGE_URL = "https://image.tmdb.org/t/p/w500/"
+
+      const API_KEY = "ADD-YOUR-OWN-API-KEY-HERE"
+      // https://www.themoviedb.org/documentation/api
+
+      var app = new Vue({
+        el: '#app',
+        data: {
+          search: '',
+          movies: []
+        },
+        created() {
+          fetch(BASE_URL + '/discover/movie?api_key=' + API_KEY)
+          .then(response => response.json())
+          .then(json => {
+            this.movies = json.results
+          })
+        },
+        methods: {
+          movieImage: function(url) {
+            return IMAGE_URL + url
+          },
+          filterMovies: function() {
+            fetch(BASE_URL + '/search/movie?api_key=' + API_KEY + '&query=' + this.search)
+            .then(response => response.json())
+            .then(json => {
+              this.movies = json.results
+            })
+          }
+        }
+      })
+    </script>
+  </body>
+</html>

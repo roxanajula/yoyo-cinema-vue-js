@@ -1,0 +1,49 @@
+<script src="https://unpkg.com/vue"></script>
+
+<div id="app">
+  <div>
+    <input type="text" v-on:input="filterMovies" v-model="search">
+  </div>
+  <div v-for="movie in movies">
+    <h1> {{ movie.title }} </h1>
+    <p> {{ movie.overview}} <p>
+    <p> Release date: {{ movie.release_date}} </p>
+    <p> Vote average: {{ movie.vote_average}} </p>
+    <img :src="movieImage(movie.poster_path)">
+</div>
+</div>
+
+<script>
+const BASE_URL = "http://api.themoviedb.org/3"
+const IMAGE_URL = "https://image.tmdb.org/t/p/w500/"
+
+const API_KEY = "ADD-YOUR-OWN-API-KEY-HERE"
+// https://www.themoviedb.org/documentation/api
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    search: '',
+    movies: []
+  },
+  created() {
+    fetch(BASE_URL + '/discover/movie?api_key=' + API_KEY)
+    .then(response => response.json())
+    .then(json => {
+      this.movies = json.results
+    })
+  },
+  methods: {
+    movieImage: function(url) {
+      return IMAGE_URL + url
+    },
+    filterMovies: function() {
+      fetch(BASE_URL + '/search/movie?api_key=' + API_KEY + '&query=' + this.search)
+      .then(response => response.json())
+      .then(json => {
+        this.movies = json.results
+      })
+    }
+  }
+})
+</script>
